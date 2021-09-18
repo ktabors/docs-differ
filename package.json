@@ -7,7 +7,8 @@
     "start": "nodemon src/index.js"
   },
   "dependencies": {
-    "pageres": "6.2.3"
+    "pageres": "^6.2.3",
+    "screenshots-diff": "^1.2.6"
   },
   "devDependencies": {
     "nodemon": "1.18.4"

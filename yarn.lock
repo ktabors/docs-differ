@@ -1182,6 +1182,11 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
 
+jpeg-js@0.4.0:
+  version "0.4.0"
+  resolved "https://artifactory.corp.adobe.com/artifactory/api/npm/npm-react-release/jpeg-js/-/jpeg-js-0.4.0.tgz#39adab7245b6d11e918ba5d4b49263ff2fc6a2f9"
+  integrity sha1-Oa2rckW20R6Ri6XUtJJj/y/Govk=
+
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-3.2.2.tgz#31ea21a734bab9bbb0f32466d893aea51e4a3c64"
@@ -1655,10 +1660,10 @@ package-json@^4.0.0:
     registry-url "^3.0.3"
     semver "^5.1.0"
 
-pageres@6.2.3:
+pageres@^6.2.3:
   version "6.2.3"
-  resolved "https://registry.yarnpkg.com/pageres/-/pageres-6.2.3.tgz#27bc264d2ac19366253c3176eae13dd803bf3685"
-  integrity sha512-qmXdiJjUyEjavMKaMfIT4O1y0nnxvCVRhtcVGgIzmCV2FabM34izEseGqSOz8Ro8gmYq07Y7I/0KFI3PhTTKvg==
+  resolved "https://artifactory.corp.adobe.com/artifactory/api/npm/npm-react-release/pageres/-/pageres-6.2.3.tgz#27bc264d2ac19366253c3176eae13dd803bf3685"
+  integrity sha1-J7wmTSrBk2YlPDF26uE92AO/NoU=
   dependencies:
     array-differ "^3.0.0"
     array-uniq "^2.1.0"
@@ -1768,6 +1773,11 @@ plur@^4.0.0:
   integrity sha512-4UGewrYgqDFw9vV6zNV+ADmPAUAfJPKtGvb/VdpQAx25X5f3xXdGdyOEVFwkl8Hl/tl7+xbeHqSEM+D5/TirUg==
   dependencies:
     irregular-plurals "^3.2.0"
+
+pngjs@5.0.0:
+  version "5.0.0"
+  resolved "https://artifactory.corp.adobe.com/artifactory/api/npm/npm-react-release/pngjs/-/pngjs-5.0.0.tgz#e79dd2b215767fd9c04561c01236df960bce7fbb"
+  integrity sha1-553SshV2f9nARWHAEjbflgvOf7s=
 
 posix-character-classes@^0.1.0:
   version "0.1.1"
@@ -1998,6 +2008,14 @@ safe-regex@^1.1.0:
 sax@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
+
+screenshots-diff@^1.2.6:
+  version "1.2.6"
+  resolved "https://artifactory.corp.adobe.com/artifactory/api/npm/npm-react-release/screenshots-diff/-/screenshots-diff-1.2.6.tgz#0dc9d5c4f4ae6133d7ffda2ad2e22df73ceb300b"
+  integrity sha1-DcnVxPSuYTPX/9oq0uIt9zzrMAs=
+  dependencies:
+    jpeg-js "0.4.0"
+    pngjs "5.0.0"
 
 semver-diff@^2.0.0:
   version "2.1.0"
