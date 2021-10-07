@@ -2,6 +2,7 @@
   "name": "docs-differ",
   "version": "1.0.0",
   "description": "diffs two websites, built for react-spectrum docs site",
+  "license": "Apache-2.0",
   "main": "src/index.js",
   "scripts": {
     "clean": "rm -rf node_modules",
@@ -14,7 +15,7 @@
   "devDependencies": {
     "nodemon": "1.18.4"
   },
-  "keywords": [],
+  "keywords": ["website visual differ"],
   "bin": {
     "docs-differ": "src/index.js"
   }
