@@ -19,33 +19,43 @@ rimraf.sync(diffDir);
 // command line options
 const baselineCommandParam = '-b';
 const currentCommandParam = '-c';
+const screenshotMaxCommandParam = '-s';
+const disableMobileCommandParam = '-m';
+const disableDesktopCommandParam = '-d';
 
-const visitedBaseline = {};
-const visitedCurrent = {};
+let visitedBaseline = {};
+let visitedCurrent = {};
 
-// dev prop for debugging with quick execution
-var limitWalk = 0;
+// global variables for args
+let screenshotLimit = -1;
+let screenshotsTaken = 0;
+let disableDesktopScreenshots = false;
+let disableMobileScreenshots = false;
 
 /**
  * Main execution loop:
  *   - gets the two URLs to diff
  *   - crawls and screenshots them
- *   - and runs the diff.
+ *   - runs the diff.
  */
 (async () => {
   let exitCode = 0;
   console.time('executionTime');
 
+  processArgs();
+
   let urls = getUrls();
   if (urls.length !== 2) {
-    console.log('Usage: \'node src/index.js -b <baseline site url> -c <current site to diff against baseline url>\'');
+    logUsage();
     return 1;
   }
 
   try {
     await puppetUrl(urls[0], visitedBaseline, baselineDir);
-    limitWalk = 0;
+    console.timeLog('executionTime');
+    screenshotsTaken = 0
     await puppetUrl(urls[1], visitedCurrent, currentDir);
+    console.timeLog('executionTime');
 
     let diffResult = await diffSites();
   } catch (e) {
@@ -57,8 +67,41 @@ var limitWalk = 0;
   return exitCode;
 })();
 
+// used in two places
+function logUsage() {
+  console.log('Usage: \'node src/index.js -b <baseline site url> -c <current site to diff against baseline url>\'');
+  console.log('Other options include -m, -d and -s <integer>');
+  console.log('  -m disable mobile screenshots, default false');
+  console.log('  -d disable desktop screenshots, default false');
+  console.log('  -s limit screenshots taken for all possible to this number');
+}
+
 /**
- * Gets the command line options which is the URLs to compare.
+ * Set the command line args:
+ *   - disable mobile screenshots
+ *   - disable desktop screenshots
+ *   - max number of screenshots
+ */
+function processArgs() {
+  var myArgs = process.argv.slice(2);
+
+  if (myArgs.includes(screenshotMaxCommandParam)) {
+    screenshotLimit = parseInt(myArgs[myArgs.indexOf(screenshotMaxCommandParam) + 1], 10);
+    if (isNaN(screenshotLimit)) {
+      logUsage();
+      process.exit(1)
+    }
+  }
+  if (myArgs.includes(disableMobileCommandParam)) {
+    disableMobileScreenshots = true;
+  }
+  if (myArgs.includes(disableDesktopCommandParam)) {
+    disableDesktopScreenshots = true;
+  }
+}
+
+/**
+ * Gets the urls to compare from the command line args.
  */
 function getUrls() {
   var myArgs = process.argv.slice(2);
@@ -89,7 +132,7 @@ async function diffSites() {
     })
     .catch(err => {
       console.error(`** ERROR ** ${err}`);
-    });
+    })
 
   return jsonResult;
 }
@@ -114,15 +157,13 @@ async function puppetUrl(url, visited, storageDirectory) {
  * external links.
  */
 async function walk(page, href, rootPath, visited, storageDirectory) {
-  // this is to limit the runtime for dev
-  limitWalk++;
-  if (limitWalk >= 10) {
-    return;
-  }
-  // end dev code block
   let url = new URL(href, page.url());
   url.hash = '';
   if (visited[url.pathname]) {
+    return;
+  }
+
+  if (screenshotLimit !== -1 && screenshotsTaken >= screenshotLimit) {
     return;
   }
 
@@ -135,8 +176,10 @@ async function walk(page, href, rootPath, visited, storageDirectory) {
   visited[url.pathname] = [`${filename}_desktop.png`, `${filename}_mobile.png`];
 
   try {
+    console.log('visiting', url.toString())
     await page.goto(url.toString());
     await screenshot(page, filename, storageDirectory);
+    screenshotsTaken++;
   } catch (e) {
     console.log('error with screenshot: ', url.toString());
   }
@@ -159,22 +202,26 @@ async function walk(page, href, rootPath, visited, storageDirectory) {
 async function screenshot(page, filename, storageDirectory) {
   mkdirp.sync(storageDirectory);
 
-  await page.setViewport({
-    width: 1366,
-    height: 784
-  });
-  // this seems to handle screenshot issues, might need to increase as we use this
-  await page.waitForTimeout(100);
+  if (!disableDesktopScreenshots) {
+    await page.setViewport({
+      width: 1366,
+      height: 784
+    });
+    // this seems to handle screenshot issues, might need to increase as we use this
+    await page.waitForTimeout(100);
 
-  await page.screenshot({
-    path: `${storageDirectory}/${filename}_desktop.png`,
-    fullPage: true
-  });
+    await page.screenshot({
+      path: `${storageDirectory}/${filename}_desktop.png`,
+      fullPage: true
+    });
+  }
 
-  await page.emulate(puppeteeriPhone11);
+  if (!disableMobileScreenshots) {
+    await page.emulate(puppeteeriPhone11);
 
-  await page.screenshot({
-    path: `${storageDirectory}/${filename}_mobile.png`,
-    fullPage: true
-  });
+    await page.screenshot({
+      path: `${storageDirectory}/${filename}_mobile.png`,
+      fullPage: true
+    });
+  }
 }
