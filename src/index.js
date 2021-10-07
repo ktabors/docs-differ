@@ -24,6 +24,7 @@ const currentCommandParam = '-c';
 const screenshotMaxCommandParam = '-s';
 const disableMobileCommandParam = '-m';
 const disableDesktopCommandParam = '-d';
+const clusterSizeCommandParam = '-k';
 
 let visitedBaseline = {};
 let visitedCurrent = {};
@@ -33,6 +34,7 @@ let screenshotLimit = -1;
 let screenshotsTaken = 0;
 let disableDesktopScreenshots = false;
 let disableMobileScreenshots = false;
+let clusterMaxConcurrency = 10;
 
 /**
  * Main execution loop:
@@ -76,6 +78,7 @@ function logUsage() {
   console.log('  -m disable mobile screenshots, default false');
   console.log('  -d disable desktop screenshots, default false');
   console.log('  -s limit screenshots taken for all possible to this number');
+  console.log('  -k max cluster size for concurrency, default 10');
 }
 
 /**
@@ -92,6 +95,17 @@ function processArgs() {
     if (isNaN(screenshotLimit)) {
       logUsage();
       process.exit(1)
+    } else if (screenshotLimit <= 0) {
+      screenshotLimit = -1;
+    }
+  }
+  if (myArgs.includes(clusterSizeCommandParam)) {
+    clusterMaxConcurrency = parseInt(myArgs[myArgs.indexOf(clusterSizeCommandParam) + 1], 10);
+    if (isNaN(clusterMaxConcurrency)) {
+      logUsage();
+      process.exit(1)
+    } else if (clusterMaxConcurrency <= 0) {
+      clusterMaxConcurrency = 10;
     }
   }
   if (myArgs.includes(disableMobileCommandParam)) {
@@ -151,6 +165,7 @@ async function puppetUrl(url, visited, storageDirectory) {
   let lastIndex = new URL(url).pathname.lastIndexOf('/');
   await walk(page, url, new URL(url).pathname.substring(0, lastIndex), visited, storageDirectory);
 
+  await page.close();
   await browser.close();
 }
 
