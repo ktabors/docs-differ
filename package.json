@@ -4,6 +4,7 @@
   "description": "diffs two websites, built for react-spectrum docs site",
   "main": "src/index.js",
   "scripts": {
+    "clean": "rm -rf node_modules",
     "start": "node src/index.js"
   },
   "dependencies": {
