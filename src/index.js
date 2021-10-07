@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 const diffScreenshots = require('screenshots-diff').default;
 const mkdirp = require('mkdirp');
 const path = require('path');
