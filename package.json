@@ -1,10 +1,10 @@
 {
-  "name": "node-template",
+  "name": "docs-differ",
   "version": "1.0.0",
-  "description": "",
+  "description": "diffs two websites, built for react-spectrum docs site",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "start": "node src/index.js"
   },
   "dependencies": {
     "puppeteer": "^10.4.0",
