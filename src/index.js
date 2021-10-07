@@ -143,6 +143,8 @@ async function diffSites() {
  * Sets up puppeteer and call walk which recursively walks the site.
  */
 async function puppetUrl(url, visited, storageDirectory) {
+  mkdirp.sync(storageDirectory);
+
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -202,8 +204,6 @@ async function walk(page, href, rootPath, visited, storageDirectory) {
  * a simulated iPhone 11 for the mobile rendering.
  */
 async function screenshot(page, filename, storageDirectory) {
-  mkdirp.sync(storageDirectory);
-
   if (!disableDesktopScreenshots) {
     await page.setViewport({
       width: 1366,
