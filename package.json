@@ -14,5 +14,8 @@
   "devDependencies": {
     "nodemon": "1.18.4"
   },
-  "keywords": []
+  "keywords": [],
+  "bin": {
+    "docs-differ": "src/index.js"
+  }
 }
