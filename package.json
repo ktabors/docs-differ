@@ -7,7 +7,7 @@
     "start": "nodemon src/index.js"
   },
   "dependencies": {
-    "pageres": "^6.2.3",
+    "puppeteer": "^10.4.0",
     "screenshots-diff": "^1.2.6"
   },
   "devDependencies": {
