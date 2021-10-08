@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "puppeteer": "^10.4.0",
+    "puppeteer-cluster": "^0.22.0",
     "screenshots-diff": "^1.2.6"
   },
   "devDependencies": {

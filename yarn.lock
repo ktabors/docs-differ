@@ -1242,6 +1242,13 @@ pump@^3.0.0:
     end-of-stream "^1.1.0"
     once "^1.3.1"
 
+puppeteer-cluster@^0.22.0:
+  version "0.22.0"
+  resolved "https://artifactory.corp.adobe.com/artifactory/api/npm/npm-react-release/puppeteer-cluster/-/puppeteer-cluster-0.22.0.tgz#4ab214671f414f15ad6a94a4b61ed0b4172e86e6"
+  integrity sha1-SrIUZx9BTxWtapSkth7QtBcuhuY=
+  dependencies:
+    debug "^4.1.1"
+
 puppeteer@^10.4.0:
   version "10.4.0"
   resolved "https://artifactory.corp.adobe.com/artifactory/api/npm/npm-react-release/puppeteer/-/puppeteer-10.4.0.tgz#a6465ff97fda0576c4ac29601406f67e6fea3dc7"
