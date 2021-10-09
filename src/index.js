@@ -30,6 +30,7 @@ const quietLoggingCommandParam = '-q';
 
 let visitedBaseline = {};
 let visitedCurrent = {};
+let badUrls = [];
 
 // global variables for args
 let screenshotLimit = -1;
@@ -62,7 +63,7 @@ let cluster;
   try {
     cluster = await Cluster.launch({
       concurrency: Cluster.CONCURRENCY_CONTEXT,
-      maxConcurrency: clusterMaxConcurrency,
+      maxConcurrency: clusterMaxConcurrency
     });
 
     // Event handler to catch and log cluster task errors
@@ -81,6 +82,11 @@ let cluster;
 
     // running the comparison of the screenshots
     let diffResult = await diffSites();
+
+    // URLs that might be bad
+    if (badUrls.length > 0) {
+      console.log('Are these URLs bad?', badUrls);
+    }
   } catch (e) {
     exitCode = 1;
     throw e;
@@ -238,24 +244,41 @@ async function walk(href, rootPath, visited, storageDirectory) {
  */
 async function crawlPage(page, {filename, rootPath, storageDirectory, url, visited}) {
   let hrefs = [];
+  let i = 0;
 
   try {
     if (verboseLogMessages) {
       console.log('visiting: ', url);
     }
-    await page.goto(url);
+    let response = await page.goto(url);
+    while (!response.ok() && i < 5) {
+      if (verboseLogMessages) {
+        console.log('trying again', url, filename, rootPath, storageDirectory);
+      }
+      let response = await page.goto(url);
+      i++;
+    }
+
     await screenshot(page, `${storageDirectory}/${filename}`);
   } catch (e) {
-    console.log('error with screenshot: ', url.toString());
+    console.log('error with screenshot: ', url.toString(), e);
   }
 
   hrefs = await page.$$eval('a[href]', as => as.map(a => a.href));
 
-  let urlHost = new URL(url).host;
+  let parentUrl = new URL(url).host;
   for (let href of hrefs) {
     let u = new URL(href, page.url());
-    if (u.host === urlHost) {
-      await walk(href, rootPath, visited, storageDirectory);
+    if (u.host === parentUrl) {
+      // skip walking patterns of URLs that cause issues
+      if ((rootPath.length > 0 && href.indexOf(rootPath) === -1) || u.pathname.indexOf('.html') === -1) {
+        badUrls.push({
+          parentUrl: url,
+          badUrl: href
+        })
+      } else {
+        await walk(href, rootPath, visited, storageDirectory);
+      }
     }
   }
 }
