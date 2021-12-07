@@ -11,9 +11,9 @@ const URL = require('url').URL;
 const puppeteeriPhone11 = puppeteer.devices['iPhone 11'];
 
 // setting up the directories
-const baselineDir = './docs-differ/baseline';
-const currentDir = './docs-differ/current';
-const diffDir = './docs-differ/diff';
+const baselineDir = 'src/docs-differ/baseline';
+const currentDir = 'src/docs-differ/current';
+const diffDir = 'src/docs-differ/diff';
 
 rimraf.sync(baselineDir);
 rimraf.sync(currentDir);
