@@ -1,12 +1,13 @@
 #! /usr/bin/env node
 
 const {Cluster} = require('puppeteer-cluster');
-const diffScreenshots = require('screenshots-diff').default;
 const mkdirp = require('mkdirp');
 const path = require('path');
 const puppeteer = require('puppeteer');
 const rimraf = require('rimraf');
 const URL = require('url').URL;
+const {defaultParamValues, getUrls, logUsage, processArgs} = require('./args');
+const {diffSites} = require('./screenDiff');
 
 const puppeteeriPhone11 = puppeteer.devices['iPhone 11'];
 
@@ -15,29 +16,17 @@ const baselineDir = 'docs-differ/baseline';
 const currentDir = 'docs-differ/current';
 const diffDir = 'docs-differ/diff';
 
-rimraf.sync(baselineDir);
-rimraf.sync(currentDir);
-rimraf.sync(diffDir);
-
-// command line options
-const baselineCommandParam = '-b';
-const currentCommandParam = '-c';
-const screenshotMaxCommandParam = '-s';
-const disableMobileCommandParam = '-m';
-const disableDesktopCommandParam = '-d';
-const clusterSizeCommandParam = '-k';
-const quietLoggingCommandParam = '-q';
-
 let visitedBaseline = {};
 let visitedCurrent = {};
 let badUrls = [];
 
 // global variables for args
-let screenshotLimit = -1;
-let disableDesktopScreenshots = false;
-let disableMobileScreenshots = false;
-let clusterMaxConcurrency = 10;
-let verboseLogMessages = true;
+let {
+  screenshotLimit,
+  disableDesktopScreenshots,
+  disableMobileScreenshots,
+  verboseLogMessages
+} = defaultParamValues;
 
 // global cluster variable to avoid passing it around
 let cluster;
@@ -52,18 +41,27 @@ let cluster;
   let exitCode = 0;
   console.time('executionTime');
 
-  processArgs();
+  let {...values} = processArgs();
+  screenshotLimit = values.screenshotLimit;
+  disableMobileScreenshots = values.disableMobileScreenshots;
+  disableDesktopScreenshots = values.disableDesktopScreenshots;
+  verboseLogMessages = values.verboseLogMessages;
 
   let urls = getUrls();
   if (urls.length !== 2) {
     logUsage();
-    return 1;
+    process.exit(1);
   }
+
+  // This was part of the setup before, moved after args because new args will keep these directories
+  rimraf.sync(baselineDir);
+  rimraf.sync(currentDir);
+  rimraf.sync(diffDir);
 
   try {
     cluster = await Cluster.launch({
       concurrency: Cluster.CONCURRENCY_CONTEXT,
-      maxConcurrency: clusterMaxConcurrency
+      maxConcurrency: values.clusterMaxConcurrency
     });
 
     // Event handler to catch and log cluster task errors
@@ -80,9 +78,6 @@ let cluster;
     console.log('queue empty and cluster closed');
     console.timeLog('executionTime');
 
-    // running the comparison of the screenshots
-    let diffResult = await diffSites();
-
     // URLs that might be bad
     if (badUrls.length > 0) {
       console.log('Are these URLs bad?', badUrls);
@@ -92,107 +87,25 @@ let cluster;
     throw e;
   } finally {
     // cluster cleanup in case there is an exception
-    await cluster.idle();
-    await cluster.close();
+    (await cluster).idle();
+    (await cluster).close();
   }
+
+  // running the comparison of the screenshots
+  let diffResult = await diffSites(baselineDir, currentDir, diffDir);
 
   console.timeEnd('executionTime');
   return exitCode;
 })();
 
-// used in two places
-function logUsage() {
-  console.log('Usage: \'node src/index.js -b <baseline site url> -c <current site to diff against baseline url>\'');
-  console.log('Other options include -m, -d and -s <integer>');
-  console.log('  -m disable mobile screenshots, default false');
-  console.log('  -d disable desktop screenshots, default false');
-  console.log('  -s limit screenshots taken for all possible to this number');
-  console.log('  -k max cluster size for concurrency, default 10');
-  console.log('  -q quiets some log messages');
-}
 
 /**
- * Set the command line args:
- *   - disable mobile screenshots
- *   - disable desktop screenshots
- *   - max number of screenshots
- */
-function processArgs() {
-  let myArgs = process.argv.slice(2);
-
-  if (myArgs.includes(screenshotMaxCommandParam)) {
-    screenshotLimit = parseInt(myArgs[myArgs.indexOf(screenshotMaxCommandParam) + 1], 10);
-    if (isNaN(screenshotLimit)) {
-      logUsage();
-      process.exit(1)
-    } else if (screenshotLimit <= 0) {
-      screenshotLimit = -1;
-    }
-  }
-  if (myArgs.includes(clusterSizeCommandParam)) {
-    clusterMaxConcurrency = parseInt(myArgs[myArgs.indexOf(clusterSizeCommandParam) + 1], 10);
-    if (isNaN(clusterMaxConcurrency)) {
-      logUsage();
-      process.exit(1)
-    } else if (clusterMaxConcurrency <= 0) {
-      clusterMaxConcurrency = 10;
-    }
-  }
-  if (myArgs.includes(disableMobileCommandParam)) {
-    disableMobileScreenshots = true;
-  }
-  if (myArgs.includes(disableDesktopCommandParam)) {
-    disableDesktopScreenshots = true;
-  }
-  if (myArgs.includes(quietLoggingCommandParam)) {
-    verboseLogMessages = false;
-  }
-}
-
-/**
- * Gets the urls to compare from the command line args.
- */
-function getUrls() {
-  let myArgs = process.argv.slice(2);
-
-  let urls = [];
-  if (myArgs.includes(baselineCommandParam)) {
-    urls.push(myArgs[myArgs.indexOf(baselineCommandParam) + 1]);
-  }
-  if (myArgs.includes(currentCommandParam)) {
-    urls.push(myArgs[myArgs.indexOf(currentCommandParam) + 1]);
-  }
-
-  return urls;
-}
-
-/**
- * Calls the screenshot diff tool on the two directories and creates a json
- * report that is saved and logged.
- */
-async function diffSites() {
-  let jsonResult = {};
-  await diffScreenshots(baselineDir, currentDir, diffDir, 0.03)
-    .then(result => {
-      if (result) {
-        jsonResult = result;
-        console.log("diff results", JSON.stringify(result, null, 1));
-      }
-    })
-    .catch(err => {
-      console.error(`** ERROR ** ${err}`);
-    })
-
-  return jsonResult;
-}
-
-/**
- * Sets up puppeteer and call walk which recursively walks the site.
+ * Figures out the root URI and recursively walks the site.
  */
 async function puppetUrl(url, visited, storageDirectory) {
   mkdirp.sync(storageDirectory);
 
-  // last index is to create the root bath for CI urls
+  // last index is to create the root path for CI urls
   let lastIndex = new URL(url).pathname.lastIndexOf('/');
   await walk(url, new URL(url).pathname.substring(0, lastIndex), visited, storageDirectory);
 }
