@@ -6,13 +6,15 @@ const disableMobileCommandParam = '-m';
 const disableDesktopCommandParam = '-d';
 const clusterSizeCommandParam = '-k';
 const quietLoggingCommandParam = '-q';
+const rerunDiffCommandParam = '-r';
 
 const defaultValues = {
   screenshotLimit: -1,
   disableDesktopScreenshots: false,
   disableMobileScreenshots: false,
   clusterMaxConcurrency: 10,
-  verboseLogMessages: true
+  verboseLogMessages: true,
+  rerunDiff: false
 };
 
 /**
@@ -38,6 +40,7 @@ function logUsage() {
   console.log(`Other options include ${disableMobileCommandParam}, ${disableDesktopCommandParam} and ${screenshotMaxCommandParam} <integer>`);
   console.log(`  ${disableMobileCommandParam} disable mobile screenshots, default false`);
   console.log(`  ${disableDesktopCommandParam} disable desktop screenshots, default false`);
+  console.log(`  ${rerunDiffCommandParam} rerun screen shot comparison without crawling sites, default false`);
   console.log(`  ${screenshotMaxCommandParam} limit screenshots taken for all possible to this number`);
   console.log(`  ${clusterSizeCommandParam} max cluster size for concurrency, default 10`);
   console.log(`  ${quietLoggingCommandParam} quiets some log messages`);
@@ -56,7 +59,8 @@ function processArgs() {
     clusterMaxConcurrency,
     disableMobileScreenshots,
     disableDesktopScreenshots,
-    verboseLogMessages
+    verboseLogMessages,
+    rerunDiff
   } = defaultValues;
 
   if (myArgs.includes(screenshotMaxCommandParam)) {
@@ -86,8 +90,11 @@ function processArgs() {
   if (myArgs.includes(quietLoggingCommandParam)) {
     verboseLogMessages = false;
   }
+  if (myArgs.includes(rerunDiffCommandParam)) {
+    rerunDiff = true;
+  }
 
-  return {screenshotLimit, clusterMaxConcurrency, disableMobileScreenshots, disableDesktopScreenshots, verboseLogMessages};
+  return {screenshotLimit, clusterMaxConcurrency, disableMobileScreenshots, disableDesktopScreenshots, verboseLogMessages, rerunDiff};
 }
 
 exports.getUrls = getUrls;

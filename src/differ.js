@@ -22,19 +22,23 @@ const diffDir = 'docs-differ/diff';
 
   let argValues = processArgs();
 
-  let urls = getUrls();
-  if (urls.length !== 2) {
-    logUsage();
-    process.exit(1);
+  if (!argValues.rerunDiff) {
+    let urls = getUrls();
+    if (urls.length !== 2) {
+      logUsage();
+      process.exit(1);
+    }
+
+    // This was part of the setup before, moved after args because new args will keep these directories
+    rimraf.sync(baselineDir);
+    rimraf.sync(currentDir);
+    rimraf.sync(diffDir);
+
+    // crawling sites
+    await setupClusterAndCrawl({baselineDir, currentDir, urls, ...argValues});
+  } else {
+    rimraf.sync(diffDir);
   }
-
-  // This was part of the setup before, moved after args because new args will keep these directories
-  rimraf.sync(baselineDir);
-  rimraf.sync(currentDir);
-  rimraf.sync(diffDir);
-
-  // crawling sites
-  await setupClusterAndCrawl({baselineDir, currentDir, urls, ...argValues});
 
   // running the comparison of the screenshots
   let diffResult = await diffSites(baselineDir, currentDir, diffDir);
