@@ -6,9 +6,9 @@ const {diffSites} = require('./screenDiff');
 const {setupClusterAndCrawl} = require('./crawl');
 
 // setting up the directories
-const baselineDir = 'docs-differ/baseline';
-const currentDir = 'docs-differ/current';
-const diffDir = 'docs-differ/diff';
+const baselineDir = 'src/docs-differ/baseline';
+const currentDir = 'src/docs-differ/current';
+const diffDir = 'src/docs-differ/diff';
 
 /**
  * Main execution loop:
