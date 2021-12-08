@@ -6,13 +6,15 @@ const disableMobileCommandParam = '-m';
 const disableDesktopCommandParam = '-d';
 const clusterSizeCommandParam = '-k';
 const quietLoggingCommandParam = '-q';
+const scrubHeaderCommandParam = '-h';
 
 const defaultValues = {
   screenshotLimit: -1,
   disableDesktopScreenshots: false,
   disableMobileScreenshots: false,
   clusterMaxConcurrency: 10,
-  verboseLogMessages: true
+  verboseLogMessages: true,
+  scrubHeader: false
 };
 
 /**
@@ -56,7 +58,8 @@ function processArgs() {
     clusterMaxConcurrency,
     disableMobileScreenshots,
     disableDesktopScreenshots,
-    verboseLogMessages
+    verboseLogMessages,
+    scrubHeader
   } = defaultValues;
 
   if (myArgs.includes(screenshotMaxCommandParam)) {
@@ -86,8 +89,11 @@ function processArgs() {
   if (myArgs.includes(quietLoggingCommandParam)) {
     verboseLogMessages = false;
   }
+  if (myArgs.includes(scrubHeaderCommandParam)) {
+    scrubHeader = true;
+  }
 
-  return {screenshotLimit, clusterMaxConcurrency, disableMobileScreenshots, disableDesktopScreenshots, verboseLogMessages};
+  return {screenshotLimit, clusterMaxConcurrency, disableMobileScreenshots, disableDesktopScreenshots, verboseLogMessages, scrubHeader};
 }
 
 exports.getUrls = getUrls;
