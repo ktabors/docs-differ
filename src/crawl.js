@@ -19,7 +19,8 @@ let {
   screenshotLimit,
   disableDesktopScreenshots,
   disableMobileScreenshots,
-  verboseLogMessages
+  verboseLogMessages,
+  scrubHeader
 } = defaultParamValues;
 
 /**
@@ -30,6 +31,7 @@ async function setupClusterAndCrawl({baselineDir, currentDir, urls, ...argValues
   disableDesktopScreenshots = argValues.disableDesktopScreenshots;
   disableMobileScreenshots = argValues.disableMobileScreenshots;
   verboseLogMessages = argValues.verboseLogMessages;
+  scrubHeader = argValues.scrubHeader;
 
   try {
     cluster = await Cluster.launch({
@@ -168,10 +170,13 @@ async function crawlPage(page, {filename, rootPath, storageDirectory, url, visit
  */
 async function screenshot(page, filename) {
   if (!disableDesktopScreenshots) {
+    await scrubInstallAndVersion(page);
+
     await page.setViewport({
       width: 1366,
       height: 784
     });
+
     // this seems to handle screenshot issues, might need to increase as we use this
     await page.waitForTimeout(100);
 
@@ -184,9 +189,41 @@ async function screenshot(page, filename) {
   if (!disableMobileScreenshots) {
     await page.emulate(puppeteeriPhone11);
 
+    // This has to be called after the emulate to iPhone to work
+    await scrubInstallAndVersion(page);
+
     await page.screenshot({
       path: `${filename}_mobile.png`,
       fullPage: true
+    });
+  }
+}
+
+/**
+ * The version, install, and usage can be different between the baseline and current
+ * so this will normalize to prevent false positives.
+ */
+async function scrubInstallAndVersion(page) {
+  if (scrubHeader) {
+    await page.evaluate(() => {
+      // removing the install package name
+      let install = document.body.querySelector('td code');
+      if (install && install.innerHTML && install.innerHTML.includes && install.innerHTML.includes('yarn add') && install.parentElement.parentElement.firstChild.innerHTML.includes('install')) {
+        install.innerHTML = 'yarn add';
+        // end remove the install package name
+
+        // removing the release version number
+        let version = install.parentElement.parentElement.nextElementSibling;
+        if (version && version.firstChild && version.firstChild.innerHTML && version.firstChild.innerHTML.includes('version')) {
+          version.lastChild.innerHTML = '';
+        }
+
+        // removing the usage package name
+        let usage = install.parentElement.parentElement.parentElement.lastChild;
+        if (usage && usage.firstChild && usage.firstChild.innerHTML && usage.firstChild.innerHTML.includes('usage')) {
+          usage.lastChild.innerHTML = usage.lastChild.innerHTML.substring(0, usage.lastChild.innerHTML.indexOf('\'')) + usage.lastChild.innerHTML.substring(usage.lastChild.innerHTML.lastIndexOf('\'') + 1);
+        }
+      }
     });
   }
 }
