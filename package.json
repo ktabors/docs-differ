@@ -1,6 +1,6 @@
 {
   "name": "docs-differ",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "diffs two websites, built for react-spectrum docs site",
   "license": "Apache-2.0",
   "main": "src/index.js",

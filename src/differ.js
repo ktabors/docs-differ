@@ -22,22 +22,38 @@ const diffDir = 'src/docs-differ/diff';
 
   let argValues = processArgs();
 
-  let urls = getUrls();
-  if (urls.length !== 2) {
-    logUsage();
-    process.exit(1);
+  // delete previous crawls or exit if invalid commands are used
+  if (!argValues.onlyRunDiff) {
+    let urls = getUrls();
+    if (urls.length === 1) {
+      if (argValues.onlyCrawlBaseline) {
+        rimraf.sync(baselineDir);
+      } else if (argValues.onlyCrawlCurrent) {
+        rimraf.sync(currentDir);
+      } else {
+        logUsage();
+        process.exit(1);
+      }
+    } else if (urls.length === 2) {
+      rimraf.sync(baselineDir);
+      rimraf.sync(currentDir);
+    } else {
+      logUsage();
+      process.exit(1);
+    }
+
+    // crawling sites
+    await setupClusterAndCrawl({baselineDir, currentDir, urls, ...argValues});
   }
 
-  // This was part of the setup before, moved after args because new args will keep these directories
-  rimraf.sync(baselineDir);
-  rimraf.sync(currentDir);
-  rimraf.sync(diffDir);
-
-  // crawling sites
-  await setupClusterAndCrawl({baselineDir, currentDir, urls, ...argValues});
-
   // running the comparison of the screenshots
-  let diffResult = await diffSites(baselineDir, currentDir, diffDir);
+  rimraf.sync(diffDir);
+  await diffSites(baselineDir, currentDir, diffDir);
+
+  if (argValues.deleteBaselineCurrent) {
+    rimraf.sync(baselineDir);
+    rimraf.sync(currentDir);
+  }
 
   console.timeEnd('executionTime');
   return exitCode;

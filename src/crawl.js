@@ -45,8 +45,14 @@ async function setupClusterAndCrawl({baselineDir, currentDir, urls, ...argValues
     });
 
     // triggering the screenshot scrapping of the two sites
-    await walkUrl(urls[0], visitedBaseline, baselineDir);
-    await walkUrl(urls[1], visitedCurrent, currentDir);
+    if (urls.length === 2 || (urls.length === 1 && argValues.onlyCrawlBaseline)) {
+      await walkUrl(urls[0], visitedBaseline, baselineDir);
+    }
+    if (urls.length === 2) {
+      await walkUrl(urls[1], visitedCurrent, currentDir);
+    } else if (urls.length === 1 && argValues.onlyCrawlCurrent) {
+      await walkUrl(urls[0], visitedCurrent, currentDir);
+    }
 
     await cluster.idle();
     await cluster.close();
