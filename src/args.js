@@ -6,8 +6,11 @@ const disableMobileCommandParam = '-m';
 const disableDesktopCommandParam = '-d';
 const clusterSizeCommandParam = '-k';
 const quietLoggingCommandParam = '-q';
-const rerunDiffCommandParam = '-r';
+const onlyRunDiffCommandParam = '-r';
 const scrubHeaderCommandParam = '-h';
+const onlyCrawlBaselineCommandParam = '-u';
+const onlyCrawlCurrentCommandParam = '-w';
+const deleteBaselineCurrentCommandParam = '-f';
 
 const defaultValues = {
   screenshotLimit: -1,
@@ -15,8 +18,11 @@ const defaultValues = {
   disableMobileScreenshots: false,
   clusterMaxConcurrency: 10,
   verboseLogMessages: true,
-  rerunDiff: false,
-  scrubHeader: false
+  onlyRunDiff: false,
+  scrubHeader: false,
+  onlyCrawlBaseline: false,
+  onlyCrawlCurrent: false,
+  deleteBaseline: false
 };
 
 /**
@@ -42,10 +48,13 @@ function logUsage() {
   console.log(`Other options include ${disableMobileCommandParam}, ${disableDesktopCommandParam} and ${screenshotMaxCommandParam} <integer>`);
   console.log(`  ${disableMobileCommandParam} disable mobile screenshots, default false`);
   console.log(`  ${disableDesktopCommandParam} disable desktop screenshots, default false`);
-  console.log(`  ${rerunDiffCommandParam} rerun screen shot comparison without crawling sites, default false`);
-  console.log(`  ${screenshotMaxCommandParam} limit screenshots taken for all possible to this number`);
+  console.log(`  ${onlyRunDiffCommandParam} run screen shot comparison without crawling sites, default false`);
+  console.log(`  ${screenshotMaxCommandParam} limit screenshots taken for all possible to this number, default all screenshots`);
   console.log(`  ${clusterSizeCommandParam} max cluster size for concurrency, default 10`);
-  console.log(`  ${quietLoggingCommandParam} quiets some log messages`);
+  console.log(`  ${quietLoggingCommandParam} quiets some runtime messaging, default false`);
+  console.log(`  ${onlyCrawlBaselineCommandParam} crawl a new baseline, use be used in combination with ${baselineCommandParam} <baseline site url>, does a diff after, default false`);
+  console.log(`  ${onlyCrawlCurrentCommandParam} crawl a new current, use be used in combination with ${currentCommandParam} <current site to diff against baseline url>, does a diff after, default false`);
+  console.log(`  ${deleteBaselineCurrentCommandParam} delete the baseline and current directorys after diffing, default false`);
 }
 
 /**
@@ -62,8 +71,11 @@ function processArgs() {
     disableMobileScreenshots,
     disableDesktopScreenshots,
     verboseLogMessages,
-    rerunDiff,
-    scrubHeader
+    onlyRunDiff,
+    scrubHeader,
+    onlyCrawlBaseline,
+    onlyCrawlCurrent,
+    deleteBaselineCurrent
   } = defaultValues;
 
   if (myArgs.includes(screenshotMaxCommandParam)) {
@@ -93,14 +105,34 @@ function processArgs() {
   if (myArgs.includes(quietLoggingCommandParam)) {
     verboseLogMessages = false;
   }
-  if (myArgs.includes(rerunDiffCommandParam)) {
-    rerunDiff = true;
+  if (myArgs.includes(onlyRunDiffCommandParam)) {
+    onlyRunDiff = true;
   }
   if (myArgs.includes(scrubHeaderCommandParam)) {
     scrubHeader = true;
   }
+  if (myArgs.includes(onlyCrawlBaselineCommandParam)) {
+    onlyCrawlBaseline = true;
+  }
+  if (myArgs.includes(onlyCrawlCurrentCommandParam)) {
+    onlyCrawlCurrent = true;
+  }
+  if (myArgs.includes(deleteBaselineCurrentCommandParam)) {
+    deleteBaselineCurrent = true;
+  }
 
-  return {screenshotLimit, clusterMaxConcurrency, disableMobileScreenshots, disableDesktopScreenshots, verboseLogMessages, rerunDiff, scrubHeader};
+  return {
+    screenshotLimit,
+    clusterMaxConcurrency,
+    disableMobileScreenshots,
+    disableDesktopScreenshots,
+    verboseLogMessages,
+    onlyRunDiff,
+    scrubHeader,
+    onlyCrawlBaseline,
+    onlyCrawlCurrent,
+    deleteBaselineCurrent
+  };
 }
 
 exports.getUrls = getUrls;
