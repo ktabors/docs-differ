@@ -2,6 +2,7 @@
 const baselineCommandParam = '-b';
 const currentCommandParam = '-c';
 const screenshotMaxCommandParam = '-s';
+const screenshotDelayTimeCommandParam = '-t';
 const disableMobileCommandParam = '-m';
 const disableDesktopCommandParam = '-d';
 const clusterSizeCommandParam = '-k';
@@ -11,9 +12,11 @@ const scrubHeaderCommandParam = '-h';
 const onlyCrawlBaselineCommandParam = '-u';
 const onlyCrawlCurrentCommandParam = '-w';
 const deleteBaselineCurrentCommandParam = '-f';
+const helpCommandParam = '--help';
 
 const defaultValues = {
   screenshotLimit: -1,
+  screenshotDelayTime: 100,
   disableDesktopScreenshots: false,
   disableMobileScreenshots: false,
   clusterMaxConcurrency: 10,
@@ -44,12 +47,13 @@ function getUrls() {
 
 // used in two places
 function logUsage() {
-  console.log(`Usage: 'node src/index.js ${baselineCommandParam} <baseline site url> ${currentCommandParam} <current site to diff against baseline url>'`);
-  console.log(`Other options include ${disableMobileCommandParam}, ${disableDesktopCommandParam} and ${screenshotMaxCommandParam} <integer>`);
+  console.log(`Usage: 'yarn run-differ ${baselineCommandParam} <baseline site url> ${currentCommandParam} <current site to diff against baseline url>'`);
+  console.log(`Other options include:`);
   console.log(`  ${disableMobileCommandParam} disable mobile screenshots, default false`);
   console.log(`  ${disableDesktopCommandParam} disable desktop screenshots, default false`);
   console.log(`  ${onlyRunDiffCommandParam} run screen shot comparison without crawling sites, default false`);
   console.log(`  ${screenshotMaxCommandParam} limit screenshots taken for all possible to this number, default all screenshots`);
+  console.log(`  ${screenshotDelayTimeCommandParam} time in milliseconds the crawler should wait before doing a screenshot, default 100ms`);
   console.log(`  ${clusterSizeCommandParam} max cluster size for concurrency, default 10`);
   console.log(`  ${quietLoggingCommandParam} quiets some runtime messaging, default false`);
   console.log(`  ${onlyCrawlBaselineCommandParam} crawl a new baseline, use be used in combination with ${baselineCommandParam} <baseline site url>, does a diff after, default false`);
@@ -67,6 +71,7 @@ function processArgs() {
   let myArgs = process.argv.slice(2);
   let {
     screenshotLimit,
+    screenshotDelayTime,
     clusterMaxConcurrency,
     disableMobileScreenshots,
     disableDesktopScreenshots,
@@ -78,6 +83,10 @@ function processArgs() {
     deleteBaselineCurrent
   } = defaultValues;
 
+  if (myArgs.includes(helpCommandParam)) {
+    logUsage();
+    process.exit(0);
+  }
   if (myArgs.includes(screenshotMaxCommandParam)) {
     screenshotLimit = parseInt(myArgs[myArgs.indexOf(screenshotMaxCommandParam) + 1], 10);
     if (isNaN(screenshotLimit)) {
@@ -85,6 +94,15 @@ function processArgs() {
       process.exit(1);
     } else if (screenshotLimit <= 0) {
       screenshotLimit = -1;
+    }
+  }
+  if (myArgs.includes(screenshotDelayTimeCommandParam)) {
+    screenshotDelayTime = parseInt(myArgs[myArgs.indexOf(screenshotDelayTimeCommandParam) + 1], 10);
+    if (isNaN(screenshotDelayTime)) {
+      logUsage();
+      process.exit(1);
+    } else if (screenshotDelayTime < 0) {
+      screenshotDelayTime = 100;
     }
   }
   if (myArgs.includes(clusterSizeCommandParam)) {
@@ -123,6 +141,7 @@ function processArgs() {
 
   return {
     screenshotLimit,
+    screenshotDelayTime,
     clusterMaxConcurrency,
     disableMobileScreenshots,
     disableDesktopScreenshots,
