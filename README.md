@@ -38,52 +38,57 @@ See all the command line arguments for this tool.
 yarn run-differ --help
 ```
 
-To disable mobile screenshots (default `false`).
+`-b <BASE_URL> -c <NEW_URL>` The docs differ can be run independently against two user specified URLs. `-b` specifies the baseline URL and `-c` specifies the URL of the site to compare against the baseline.
+```
+yarn run-differ -b <BASE_URL> -c <NEW_URL>
+```
+
+`-m` To disable mobile screenshots (default `false`).
 ```
 yarn run-differ -m -b <BASE_URL> -c <NEW_URL>
 ```
 
-To disable desktop screenshots (default `false`).
+`-d` To disable desktop screenshots (default `false`).
 ```
 yarn run-differ -d -b <BASE_URL> -c <NEW_URL>
 ```
 
-If the screenshot comparison fails and doesn't complete, you can rerun it without running the scraper.
+`-r` If the screenshot comparison fails and doesn't complete, you can rerun it without running the scraper.
 ```
 yarn run-differ -r
 ```
 
-An optimization for saving disk space is to delete the crawled screenshots after the screenshot comparison completes.
+`-f` An optimization for saving disk space is to delete the crawled screenshots after the screenshot comparison completes.
 ```
 yarn run-differ -f -b <BASE_URL> -c <NEW_URL>
 ```
 
-To crawl a new baseline followed by a screenshot comparison of this new baseline and the existing current.
+`-u` To crawl a new baseline followed by a screenshot comparison of this new baseline and the existing current.
 ```
 yarn run-differ -u -b <BASE_URL>
 ```
 
-To crawl a new current followed by a screenshot comparison of the existing baseline and this new current.
+`-w` To crawl a new current followed by a screenshot comparison of the existing baseline and this new current.
 ```
 yarn run-differ -w -c <BASE_URL>
 ```
 
-There is an added delay of 100ms to desktop screenshots because the page isn't always fully rendered when puppeteer tries to take the screenshot. Use this to increase or decrease that delay.
+`-t <TIME>` There is an added delay of 100ms to desktop screenshots because the page isn't always fully rendered when puppeteer tries to take the screenshot. Use this to increase or decrease that delay. The time is in milliseconds.
 ```
 yarn run-differ -t 1000 -b <BASE_URL> -c <NEW_URL>
 ```
 
-Sites often have 100+ pages and running this tool in serial is time consuming. We used a clustering tool to parallelize requests, default 10. Use this to change the number of parallel requests.
+`k <POOL_SIZE>` Sites often have 100+ pages and running this tool in serial is time consuming. We used a clustering tool to parallelize requests, default 10. Use this to change the number of parallel requests.
 ```
 yarn run-differ -k 20 -b <BASE_URL> -c <NEW_URL>
 ```
 
-The tool logs every URL request it makes, this quiets those.
+`-q` The tool logs every URL request it makes, this quiets those.
 ```
 yarn run-differ -q -b <BASE_URL> -c <NEW_URL>
 ```
 
-This is a debugging option to quickly run the tool on a subset of the site.
+`-s <CRAWL_LIMIT>` This is a debugging option to quickly run the tool on the first n URLs crawled.
 ```
 yarn run-differ -s 10 -b <BASE_URL> -c <NEW_URL>
 ```
