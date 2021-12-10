@@ -2,7 +2,7 @@
 
 A puppeteer and screenshots-diff based tool to create a visual comparison of two version of a website. It was built for use with the React Spectrum Docs site.
 
-The tool takes two urls and recursively crawls every page of those sites. It does not follow any external links. After these are complete it does a screenshot comparision for a visual diff of all urls that are equivalent.
+The tool takes two URLs and recursively crawls every page of those sites. It does not follow any external links. After these are complete it does a screenshot comparison for a visual diff of all URLs that are equivalent.
 
 ## Setup
 
@@ -19,7 +19,7 @@ Run the following to generate a set of diff versus the base RSP docs site and sp
 yarn diff-base <NEW_DOCS_URL>
 ```
 
-The docs differ can be run independently against two user specified url link via:
+The docs differ can be run independently against two user specified URL link via:
 
 ```
 yarn run-differ -b <BASE_URL> -c <NEW_URL>
@@ -53,22 +53,22 @@ If the screenshot comparison fails and doesn't complete, you can rerun it withou
 yarn run-differ -r
 ```
 
-An optimization for saving disk space is to delete the crawled screenshots after the screeshot comparison completes.
+An optimization for saving disk space is to delete the crawled screenshots after the screenshot comparison completes.
 ```
 yarn run-differ -f -b <BASE_URL> -c <NEW_URL>
 ```
 
-To crawl a new baseline followed by a screenshot comparision of this new baseline and the existing current.
+To crawl a new baseline followed by a screenshot comparison of this new baseline and the existing current.
 ```
 yarn run-differ -u -b <BASE_URL>
 ```
 
-To crawl a new current followed by a screenshot comparision of the existing baseline and this new current.
+To crawl a new current followed by a screenshot comparison of the existing baseline and this new current.
 ```
 yarn run-differ -w -c <BASE_URL>
 ```
 
-There is an added delay of 100ms to desktop screenshots because the page isn't always fully rendered when pupeteer tries to take the screenshot. Use this to increase or decrease that delay.
+There is an added delay of 100ms to desktop screenshots because the page isn't always fully rendered when puppeteer tries to take the screenshot. Use this to increase or decrease that delay.
 ```
 yarn run-differ -t 1000 -b <BASE_URL> -c <NEW_URL>
 ```
@@ -78,7 +78,7 @@ Sites often have 100+ pages and running this tool in serial is time consuming. W
 yarn run-differ -k 20 -b <BASE_URL> -c <NEW_URL>
 ```
 
-The tool logs every url request it makes, this quiets those.
+The tool logs every URL request it makes, this quiets those.
 ```
 yarn run-differ -q -b <BASE_URL> -c <NEW_URL>
 ```

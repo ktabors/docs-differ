@@ -47,7 +47,7 @@ function getUrls() {
 
 // used in two places
 function logUsage() {
-  console.log(`Usage: 'yarn run-differ ${baselineCommandParam} <baseline site url> ${currentCommandParam} <current site to diff against baseline url>'`);
+  console.log(`Usage: 'yarn run-differ ${baselineCommandParam} <BASE_URL> ${currentCommandParam} <NEW_URL>'`);
   console.log(`Other options include:`);
   console.log(`  ${disableMobileCommandParam} disable mobile screenshots, default false`);
   console.log(`  ${disableDesktopCommandParam} disable desktop screenshots, default false`);
@@ -56,8 +56,8 @@ function logUsage() {
   console.log(`  ${screenshotDelayTimeCommandParam} time in milliseconds the crawler should wait before doing a screenshot, default 100ms`);
   console.log(`  ${clusterSizeCommandParam} max cluster size for concurrency, default 10`);
   console.log(`  ${quietLoggingCommandParam} quiets some runtime messaging, default false`);
-  console.log(`  ${onlyCrawlBaselineCommandParam} crawl a new baseline, use be used in combination with ${baselineCommandParam} <baseline site url>, does a diff after, default false`);
-  console.log(`  ${onlyCrawlCurrentCommandParam} crawl a new current, use be used in combination with ${currentCommandParam} <current site to diff against baseline url>, does a diff after, default false`);
+  console.log(`  ${onlyCrawlBaselineCommandParam} crawl a new baseline, use be used in combination with ${baselineCommandParam} <BASE_URL>, does a diff after, default false`);
+  console.log(`  ${onlyCrawlCurrentCommandParam} crawl a new current, use be used in combination with ${currentCommandParam} <NEW_URL>, does a diff after, default false`);
   console.log(`  ${deleteBaselineCurrentCommandParam} delete the baseline and current directorys after diffing, default false`);
 }
 
