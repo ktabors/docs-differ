@@ -17,6 +17,7 @@ let badUrls = [];
 // global variables for args
 let {
   screenshotLimit,
+  screenshotDelayTime,
   disableDesktopScreenshots,
   disableMobileScreenshots,
   verboseLogMessages,
@@ -28,6 +29,7 @@ let {
  */
 async function setupClusterAndCrawl({baselineDir, currentDir, urls, ...argValues}) {
   screenshotLimit = argValues.screenshotLimit;
+  screenshotDelayTime = argValues.screenshotDelayTime;
   disableDesktopScreenshots = argValues.disableDesktopScreenshots;
   disableMobileScreenshots = argValues.disableMobileScreenshots;
   verboseLogMessages = argValues.verboseLogMessages;
@@ -184,7 +186,7 @@ async function screenshot(page, filename) {
     });
 
     // this seems to handle screenshot issues, might need to increase as we use this
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(screenshotDelayTime);
 
     await page.screenshot({
       path: `${filename}_desktop.png`,
