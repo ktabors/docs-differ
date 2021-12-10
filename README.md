@@ -83,6 +83,11 @@ yarn run-differ -t 1000 -b <BASE_URL> -c <NEW_URL>
 yarn run-differ -k 20 -b <BASE_URL> -c <NEW_URL>
 ```
 
+`-h` This is specific to the React Spectrum docs. It removes package and header information from components.
+```
+yarn run-differ -h -b <BASE_URL> -c <NEW_URL>
+```
+
 `-q` The tool logs every URL request it makes, this quiets those.
 ```
 yarn run-differ -q -b <BASE_URL> -c <NEW_URL>
