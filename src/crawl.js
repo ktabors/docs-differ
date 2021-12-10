@@ -185,7 +185,6 @@ async function screenshot(page, filename) {
       height: 784
     });
 
-    console.log('screenshotDelayTime', screenshotDelayTime);
     // this seems to handle screenshot issues, might need to increase as we use this
     await page.waitForTimeout(screenshotDelayTime);
 
