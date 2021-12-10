@@ -4,6 +4,7 @@
   "description": "diffs two websites, built for react-spectrum docs site",
   "license": "Apache-2.0",
   "main": "src/index.js",
+  "homepage": ".",
   "scripts": {
     "clean": "rm -rf node_modules",
     "run-differ": "node src/differ.js",
