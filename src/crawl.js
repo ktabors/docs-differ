@@ -21,7 +21,8 @@ let {
   disableDesktopScreenshots,
   disableMobileScreenshots,
   verboseLogMessages,
-  scrubHeader
+  scrubHeader,
+  updatePage
 } = defaultParamValues;
 
 /**
@@ -34,6 +35,7 @@ async function setupClusterAndCrawl({baselineDir, currentDir, urls, ...argValues
   disableMobileScreenshots = argValues.disableMobileScreenshots;
   verboseLogMessages = argValues.verboseLogMessages;
   scrubHeader = argValues.scrubHeader;
+  updatePage = argValues.updatePage;
 
   try {
     cluster = await Cluster.launch({
@@ -153,20 +155,22 @@ async function crawlPage(page, {filename, rootPath, storageDirectory, url, visit
     console.log('error with screenshot: ', url.toString(), e);
   }
 
-  hrefs = await page.$$eval('a[href]', as => as.map(a => a.href));
+  if (!updatePage) {
+    hrefs = await page.$$eval('a[href]', as => as.map(a => a.href));
 
-  let parentUrl = new URL(url).host;
-  for (let href of hrefs) {
-    let u = new URL(href, page.url());
-    if (u.host === parentUrl) {
-      // skip walking patterns of URLs that cause issues
-      if ((rootPath.length > 0 && href.indexOf(rootPath) === -1) || u.pathname.indexOf('.html') === -1) {
-        badUrls.push({
-          parentUrl: url,
-          badUrl: href
-        })
-      } else {
-        await walk(href, rootPath, visited, storageDirectory);
+    let parentUrl = new URL(url).host;
+    for (let href of hrefs) {
+      let u = new URL(href, page.url());
+      if (u.host === parentUrl) {
+        // skip walking patterns of URLs that cause issues
+        if ((rootPath.length > 0 && href.indexOf(rootPath) === -1) || u.pathname.indexOf('.html') === -1) {
+          badUrls.push({
+            parentUrl: url,
+            badUrl: href
+          })
+        } else {
+          await walk(href, rootPath, visited, storageDirectory);
+        }
       }
     }
   }

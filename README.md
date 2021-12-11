@@ -70,7 +70,16 @@ yarn run-differ -u -b <BASE_URL>
 
 `-w` To crawl a new current followed by a screenshot comparison of the existing baseline and this new current.
 ```
-yarn run-differ -w -c <BASE_URL>
+yarn run-differ -w -c <NEW_URL>
+```
+
+`-p` Scraps a single page, either in the baseline or current. It doesn't delete the existing scrap and diff is run after. Must specify if the url is a baseline or current.
+```
+yarn run-differ -p -b <BASE_URL>
+```
+or
+```
+yarn run-differ -p -c <NEW_URL>
 ```
 
 `-t <TIME>` There is an added delay of 100ms to desktop screenshots because the page isn't always fully rendered when puppeteer tries to take the screenshot. Use this to increase or decrease that delay. The time is in milliseconds.
