@@ -38,12 +38,15 @@ async function setupClusterAndCrawl({baselineDir, currentDir, urls, ...argValues
   try {
     cluster = await Cluster.launch({
       concurrency: Cluster.CONCURRENCY_CONTEXT,
-      maxConcurrency: argValues.clusterMaxConcurrency
+      maxConcurrency: argValues.clusterMaxConcurrency,
+      retryLimit: 3,
+      retryDelay: 100,
+      skipDuplicateUrls: true
     });
 
     // Event handler to catch and log cluster task errors
-    cluster.on('taskerror', (err, data) => {
-      console.log(`Error crawling ${data}: ${err.message}`);
+    cluster.on('taskerror', (err, data, willRetry) => {
+      console.log(`Error crawling (retrying) ${data.url}: ${err.message}`);
     });
 
     // triggering the screenshot scrapping of the two sites
@@ -95,9 +98,9 @@ async function walkUrl(url, visited, storageDirectory) {
 async function walk(href, rootPath, visited, storageDirectory) {
   let url = new URL(href);
   url.hash = '';
-  if (visited[url.pathname]) {
+  /* if (visited[url.pathname]) {
     return;
-  }
+  }*/
 
   if (screenshotLimit !== -1 && Object.keys(visited).length >= screenshotLimit) {
     return;
@@ -141,9 +144,9 @@ async function crawlPage(page, {filename, rootPath, storageDirectory, url, visit
     }
     let response = await page.goto(url);
     while (!response.ok() && i < 5) {
-      if (verboseLogMessages) {
+      // if (verboseLogMessages) {
         console.log('trying again', url, filename, rootPath, storageDirectory);
-      }
+      // }
       let response = await page.goto(url);
       i++;
     }
@@ -151,6 +154,10 @@ async function crawlPage(page, {filename, rootPath, storageDirectory, url, visit
     await screenshot(page, `${storageDirectory}/${filename}`);
   } catch (e) {
     console.log('error with screenshot: ', url.toString(), e);
+    // trying again (seems to be an issue where some pages take a desktop and fail on mobile)
+    if (e.toString().indexOf('Target closed') > 0 || e.toString().indexOf('Navigation Timeout') > 0 || e.toString().indexOf('ERR_NAME_NOT_RESOLVED') > 0) {
+      await page.goto(url);
+    }
   }
 
   hrefs = await page.$$eval('a[href]', as => as.map(a => a.href));
@@ -185,7 +192,7 @@ async function screenshot(page, filename) {
       height: 784
     });
 
-    // this seems to handle screenshot issues, might need to increase as we use this
+    // this handles screenshot issues where the screenshot doesn't capture the entire page
     await page.waitForTimeout(screenshotDelayTime);
 
     await page.screenshot({
@@ -199,6 +206,9 @@ async function screenshot(page, filename) {
 
     // This has to be called after the emulate to iPhone to work
     await scrubInstallAndVersion(page);
+
+    // this handles screenshot issues where the font doesn't load correctly
+    await page.waitForTimeout(screenshotDelayTime);
 
     await page.screenshot({
       path: `${filename}_mobile.png`,
