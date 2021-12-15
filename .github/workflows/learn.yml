@@ -1,7 +1,7 @@
 name: learn
 on: [push]
 jobs:
-  check-bats-version:
+  runs-docs-differ:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -9,4 +9,4 @@ jobs:
         with:
           node-version: '12'
       - run: yarn install
-      - run: yarn run-differ -m -s 1 -b https://react-spectrum.adobe.com/ -c https://react-spectrum.adobe.com/ ; yarn start
+      - run: yarn run-differ -m -s 1 -b https://react-spectrum.adobe.com/ -c https://react-spectrum.adobe.com/
