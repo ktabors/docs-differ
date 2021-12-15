@@ -1,6 +1,6 @@
 {
   "name": "docs-differ",
-  "version": "1.0.7-alpha",
+  "version": "1.1.0-alpha",
   "description": "Crawls and visually diffs two websites, built for @adobe/react-spectrum docs site.",
   "license": "Apache-2.0",
   "homepage": "https://github.com/ktabors/docs-differ",

@@ -3,7 +3,7 @@ on:
   release:
     types: [created]
 jobs:
-  build:
+  yarn-publish-npmjs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
