@@ -54,7 +54,6 @@ function DiffCardView() {
         )}
       </CardView>
       <ActionBar
-        isEmphasized
         selectedItemCount={selectedKeys.size}
         onClearSelection={() => {
           setSelectedKeys(new Set());
