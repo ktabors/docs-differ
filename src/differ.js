@@ -25,21 +25,23 @@ const diffDir = 'src/docs-differ/diff';
   // delete previous crawls or exit if invalid commands are used
   if (!argValues.onlyRunDiff) {
     let urls = getUrls();
-    if (urls.length === 1) {
-      if (argValues.onlyCrawlBaseline) {
+    if (!argValues.updatePage) {
+      if (urls.length === 1) {
+        if (argValues.onlyCrawlBaseline) {
+          rimraf.sync(baselineDir);
+        } else if (argValues.onlyCrawlCurrent) {
+          rimraf.sync(currentDir);
+        } else {
+          logUsage();
+          process.exit(1);
+        }
+      } else if (urls.length === 2) {
         rimraf.sync(baselineDir);
-      } else if (argValues.onlyCrawlCurrent) {
         rimraf.sync(currentDir);
       } else {
         logUsage();
         process.exit(1);
       }
-    } else if (urls.length === 2) {
-      rimraf.sync(baselineDir);
-      rimraf.sync(currentDir);
-    } else {
-      logUsage();
-      process.exit(1);
     }
 
     // crawling sites
