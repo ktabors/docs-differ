@@ -108,7 +108,14 @@ async function walk(href, rootPath, visited, storageDirectory) {
    * - the screenshot tool doesn't handle subdirectories so we include those in
    *   the file names with ~~ indicating where a directory slash was
    */
-  let filename = url.pathname.replace(rootPath, '').slice(1).split('.')[0].replace('/', '~~');
+  let filename;
+  if (url.searchParams && url.searchParams.get('id')) {
+    // filename for storybook crawls
+    filename = url.searchParams.get('id');
+  } else {
+    // filename for react spectrum docs
+    filename = url.pathname.replace(rootPath, '').slice(1).split('.')[0].replace('/', '~~');
+  }
   visited[url.pathname] = [`${filename}_desktop.png`, `${filename}_mobile.png`];
 
   await cluster.task(async ({ page, data: url }) => {

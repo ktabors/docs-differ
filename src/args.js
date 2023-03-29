@@ -12,6 +12,7 @@ const scrubHeaderCommandParam = '-h';
 const onlyCrawlBaselineCommandParam = '-u';
 const onlyCrawlCurrentCommandParam = '-w';
 const deleteBaselineCurrentCommandParam = '-f';
+const skipCrawlDirectoryCleanCommandParam = '-z';
 const helpCommandParam = '--help';
 
 const defaultValues = {
@@ -25,7 +26,8 @@ const defaultValues = {
   scrubHeader: false,
   onlyCrawlBaseline: false,
   onlyCrawlCurrent: false,
-  deleteBaseline: false
+  deleteBaseline: false,
+  skipCrawlDirectoryClean: false
 };
 
 /**
@@ -59,6 +61,7 @@ function logUsage() {
   console.log(`  ${onlyCrawlBaselineCommandParam} crawl a new baseline, use be used in combination with ${baselineCommandParam} <BASE_URL>, does a diff after, default false`);
   console.log(`  ${onlyCrawlCurrentCommandParam} crawl a new current, use be used in combination with ${currentCommandParam} <NEW_URL>, does a diff after, default false`);
   console.log(`  ${deleteBaselineCurrentCommandParam} delete the baseline and current directorys after diffing, default false`);
+  console.log(`  ${skipCrawlDirectoryCleanCommandParam} don't delete the screenshots in the crawl directories before running, default false`);
 }
 
 /**
@@ -80,7 +83,8 @@ function processArgs() {
     scrubHeader,
     onlyCrawlBaseline,
     onlyCrawlCurrent,
-    deleteBaselineCurrent
+    deleteBaselineCurrent,
+    skipCrawlDirectoryClean
   } = defaultValues;
 
   if (myArgs.includes(helpCommandParam)) {
@@ -138,6 +142,9 @@ function processArgs() {
   if (myArgs.includes(deleteBaselineCurrentCommandParam)) {
     deleteBaselineCurrent = true;
   }
+  if (myArgs.includes(skipCrawlDirectoryCleanCommandParam)) {
+    skipCrawlDirectoryClean = true;
+  }
 
   return {
     screenshotLimit,
@@ -150,7 +157,8 @@ function processArgs() {
     scrubHeader,
     onlyCrawlBaseline,
     onlyCrawlCurrent,
-    deleteBaselineCurrent
+    deleteBaselineCurrent,
+    skipCrawlDirectoryClean
   };
 }
 

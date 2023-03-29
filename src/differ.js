@@ -26,18 +26,18 @@ const diffDir = 'src/docs-differ/diff';
   if (!argValues.onlyRunDiff) {
     let urls = getUrls();
     if (urls.length === 1) {
-      if (argValues.onlyCrawlBaseline) {
+      if (argValues.onlyCrawlBaseline && !argValues.skipCrawlDirectoryClean) {
         rimraf.sync(baselineDir);
-      } else if (argValues.onlyCrawlCurrent) {
+      } else if (argValues.onlyCrawlCurrent && !argValues.skipCrawlDirectoryClean) {
         rimraf.sync(currentDir);
-      } else {
+      } else if (!argValues.skipCrawlDirectoryClean) {
         logUsage();
         process.exit(1);
       }
-    } else if (urls.length === 2) {
+    } else if (urls.length === 2 && !argValues.skipCrawlDirectoryClean) {
       rimraf.sync(baselineDir);
       rimraf.sync(currentDir);
-    } else {
+    } else if (!argValues.skipCrawlDirectoryClean) {
       logUsage();
       process.exit(1);
     }
@@ -47,7 +47,9 @@ const diffDir = 'src/docs-differ/diff';
   }
 
   // running the comparison of the screenshots
-  rimraf.sync(diffDir);
+  if (!argValues.skipCrawlDirectoryClean) {
+    rimraf.sync(diffDir);
+  }
   await diffSites(baselineDir, currentDir, diffDir);
 
   if (argValues.deleteBaselineCurrent) {

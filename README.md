@@ -97,3 +97,8 @@ yarn run-differ -q -b <BASE_URL> -c <NEW_URL>
 ```
 yarn run-differ -s 10 -b <BASE_URL> -c <NEW_URL>
 ```
+
+`-z` Don't delete the screenshots in the crawl directories before running, default false.
+```
+yarn run-differ -z -b <BASE_URL> -c <NEW_URL>
+```
