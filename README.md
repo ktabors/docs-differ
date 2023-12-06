@@ -6,7 +6,7 @@ The tool takes two URLs and recursively crawls every page of those sites. It doe
 
 ## Setup
 
-You can clone the repo, crawl two versions of the site, and start the web dashboard. Make sure you have the following requirements installed: node (v12.0.0+) and yarn (v1.22.0+).
+You can clone the repo, crawl two versions of the site, and start the web dashboard. Make sure you have the following requirements installed: node (16.13.2+) and yarn (v1.22.0+).
 
 ```
 yarn install

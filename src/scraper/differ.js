@@ -50,7 +50,7 @@ const diffDir = 'src/docs-differ/diff';
   if (!argValues.skipCrawlDirectoryClean) {
     rimraf.sync(diffDir);
   }
-  await diffSites(baselineDir, currentDir, diffDir);
+  await diffSites(baselineDir, currentDir, diffDir, argValues.verboseLogMessages);
 
   if (argValues.deleteBaselineCurrent) {
     rimraf.sync(baselineDir);

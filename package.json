@@ -11,7 +11,7 @@
   },
   "scripts": {
     "clean": "rm -rf node_modules",
-    "run-differ": "node src/differ.js",
+    "run-differ": "node src/scraper/differ.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -19,14 +19,13 @@
     "diff-base": "./scripts/generateDiff.sh"
   },
   "dependencies": {
-    "@adobe/react-spectrum": "latest",
-    "@react-spectrum/card": "3.0.0-alpha.1",
-    "@react-spectrum/actionbar": "3.0.0-alpha.7",
-    "puppeteer": "^10.4.0",
-    "puppeteer-cluster": "^0.22.0",
+    "@adobe/react-spectrum": "^3.32.2",
+    "@react-spectrum/card": "3.0.0-alpha.25",
+    "puppeteer": "^21.5.2",
+    "puppeteer-cluster": "^0.23.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^5.0.1",
     "screenshots-diff": "^1.2.6"
   },
   "devDependencies": {
@@ -36,7 +35,7 @@
     "website visual differ"
   ],
   "bin": {
-    "docs-differ": "src/differ.js"
+    "docs-differ": "src/scraper/differ.js"
   },
   "browserslist": {
     "production": [
